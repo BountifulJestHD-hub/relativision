@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Relativision</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <canvas id="glow"></canvas>
+  <div id="hint">Relativision - A Physically Accurate Black Hole Simulator</div>
+
+  <!-- on-screen buttons (hidden in photo mode) -->
+  <div id="hud">
+    <button id="photoBtn" class="round" aria-label="Capture photo" title="Capture photo (P)">📷</button>
+    <button id="toggle" class="round" aria-label="Settings" title="Settings">⚙</button>
+  </div>
+
+  <!-- full-screen settings: the simulation is paused while this is open -->
+  <div id="settings">
+    <header>
+      <h2 id="secTitle">Settings</h2>
+      <button id="close" class="hbtn">▶ Resume</button>
+    </header>
+    <div id="content"></div>
+    <nav id="tabs"></nav>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="shader.js"></script>
+  <script src="physics.js"></script>
+  <script src="settings.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

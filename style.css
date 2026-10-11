@@ -1,0 +1,219 @@
+:root { --accent: #ffb15c; --panel: #08080c; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: system-ui, sans-serif;
+}
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Bloom layer: blurred low-res copy of the main canvas (filter/opacity set from JS) */
+#glow { mix-blend-mode: screen; pointer-events: none; }
+
+#hint {
+  position: fixed;
+  left: 0; right: 0; bottom: calc(14px + env(safe-area-inset-bottom));
+  text-align: center;
+  color: #fff8;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* ---------- on-screen buttons ---------- */
+#hud {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.round {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid #fff3;
+  background: #0b0b10b3;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* ---------- photo mode: hide every UI element ---------- */
+body.photo #hud,
+body.photo #hint { display: none; }
+
+/* ---------- full-screen settings ---------- */
+#settings {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  background: var(--panel);          /* fully opaque: nothing underneath needs compositing */
+  color: #e6e6ea;
+  font-size: 14px;
+  line-height: 1.4;
+}
+body.settings-open #settings { display: flex; }
+body.settings-open #gl,
+body.settings-open #glow,
+body.settings-open #hud,
+body.settings-open #hint { visibility: hidden; }
+
+/* ---------- fine-tuning preview: fade the menu so the simulation shows through ---------- */
+#settings { transition: background-color .25s; }
+.page > * { transition: opacity .2s; }
+body.tuning #settings { background: transparent; }
+body.tuning #gl,
+body.tuning #glow { visibility: visible; }
+body.tuning #settings header,
+body.tuning #tabs { opacity: 0; pointer-events: none; transition: opacity .2s; }
+body.tuning .page > :not(.live) { opacity: .08; }
+body.tuning .page > .live {
+  background: #0009;
+  border-radius: 10px;
+  box-shadow: 0 0 0 10px #0009;          /* spread does not change the layout */
+}
+
+#settings header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  border-bottom: 1px solid #ffffff14;
+}
+#settings h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hbtn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #fff3;
+  background: #ffffff14;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* the only scrolling element: simple, opaque, no blur or shadows */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.page {
+  box-sizing: border-box;
+  width: min(640px, 100%);
+  margin: 0 auto;
+  padding: 18px 18px 28px;
+}
+
+/* section tabs: bottom-center */
+#tabs {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid #ffffff14;
+  background: #0d0d13;
+  touch-action: pan-x;
+  scrollbar-width: none;
+}
+#tabs::-webkit-scrollbar { display: none; }
+.tabs-inner { display: flex; gap: 6px; margin: 0 auto; }   /* centered, scrolls when too wide */
+.tab {
+  flex: none;
+  padding: 9px 15px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #aab;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab.active { background: #ffb15c22; border-color: #ffb15c66; color: var(--accent); }
+
+/* ---------- controls ---------- */
+.row { margin-bottom: 18px; }
+.head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.head output { color: var(--accent); font-variant-numeric: tabular-nums; text-align: right; }
+input[type=range] { width: 100%; height: 28px; margin: 0; accent-color: #ff9a3c; }
+select {
+  width: 100%;
+  padding: 10px;
+  font: inherit;
+  background: #1a1a22;
+  color: #fff;
+  border: 1px solid #fff3;
+  border-radius: 8px;
+}
+.check { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 4px 0; }
+.check input { width: 20px; height: 20px; accent-color: #ff9a3c; }
+.btn {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid #fff3;
+  border-radius: 10px;
+  background: #ffffff14;
+  color: #fff;
+  cursor: pointer;
+}
+.btn.primary { background: #ff9a3c; border-color: #ff9a3c; color: #1a1005; }
+.btn:active { opacity: .8; }
+.note { color: #8a8a99; font-size: 12px; margin: -10px 0 18px; }
+.sub {
+  margin: 26px 0 14px;
+  padding-top: 14px;
+  border-top: 1px solid #ffffff14;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.page > .sub:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.info {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 8px 14px;
+  font-size: 13px;
+}
+.info div:nth-child(odd)  { color: #99a; }
+.info div:nth-child(even) { color: #fff; font-variant-numeric: tabular-nums; }
+
+/* ---------- toast (shown briefly after a photo) ---------- */
+#toast {
+  position: fixed;
+  left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  padding: 9px 16px;
+  border-radius: 20px;
+  background: #000c;
+  color: #fff;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s;
+  z-index: 30;
+}
+#toast.show { opacity: 1; }
